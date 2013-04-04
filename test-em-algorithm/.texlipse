@@ -1,14 +1,14 @@
 #TeXlipse project settings
-#Wed Apr 03 15:57:20 JST 2013
+#Thu Apr 04 19:14:21 JST 2013
 markTmpDer=true
-builderNum=0
+builderNum=4
 outputDir=
 makeIndSty=
 bibrefDir=
-outputFormat=dvi
+outputFormat=pdf
 tempDir=tmp
 mainTexFile=em-algorithm.tex
-outputFile=em-algorithm.dvi
+outputFile=em-algorithm.pdf
 langSpell=ja
-markDer=true
+markDer=false
 srcDir=
