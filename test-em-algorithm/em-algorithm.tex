@@ -1,0 +1,76 @@
+\documentclass[draft]{jsarticle}
+%\usepackage{txfonts}
+\usepackage{times}
+\usepackage{amsmath}
+\usepackage{bm}
+\newcommand{\argmax}{\operatornamewithlimits{argmax}}
+\newcommand{\argmin}{\operatornamewithlimits{argmin}}
+\begin{document}
+\title{EMアルゴリズム}
+\author{Shin Saito\\ \texttt{shinsa@jp.ibm.com}}
+\maketitle
+\begin{abstract}
+この文書では、期待値最大化法、通称EM法またはEMアルゴリズム (Expectation-Maximization Algorithm)
+についての著者の理解を述べる。
+\end{abstract}
+\section{Introduction}
+確率モデルにおけるパラメータの推定法について述べる。
+\subsection{最尤推定法}
+$N$個の観測値の集まりであるサンプルデータ$D=\{x_1,
+\ldots,x_N\}$が、\textbf{独立に、同一の確率分布に従って生成される(i.i.d.)}と仮定する。
+また、観測値としては$d$次元ベクトルまたは$d$個の変数の並びを仮定する。
+この確率分布が未知のパラメータを持つとした場合に、観測データから適切なパラメータを推定するのがパラメータ推定の問題である。
+
+パラメータを$\theta$とすると、確率分布は$p_\theta(X)$や$p(X;\theta)$と書かれることが多い。ここでは後者を採用する。
+すると独立性の仮定により、データ$D$の生起確率は
+\[ P(D)= \prod_{x_i\in D} p(x_i;\theta) \]
+となり、これは$\theta$の関数となる。これを\textbf{尤度 (likelihood)}
+といい、$L(\theta)$で表す。この尤度の対数を対数尤度 (log likelihood) とよび、多くの場合$l(\theta)$で表す。
+\[ l(\theta) = \log P(D)= \sum_{x_i\in D} \log p(x_i;\theta) \]
+最尤推定 (maximum likelihood estimation) とは、対数尤度を最大化することによりパラメータを求める方法である。
+
+\subsection{EM法}
+EM法とは、パラメータ推定において、観測値の一部が得られない、つまり観測値が\textbf{不完全データ}である場合に、非観測変数
+(unobserved variable) または隠れ変数 (latent variable)
+の値とともにパラメータを推定する方法である。基本的にはパラメータに仮の値を割り当てて最尤推定を行い、
+パラメータの値を更新していくと共に対数尤度を増加させてゆくという方法をとる。例を挙げる。
+\subsubsection{例: 混合モデル}
+隠れ変数は、内部状態を表す変数、と呼ばれることもある。そのネーミングによくマッチする例をあげる。
+
+確率分布$p_i, \ldots,
+p_M$から得られる混合モデル \[ p(x;\bm{\lambda})= \sum_{j=1}^M \lambda_j p_j(x) \quad
+(\text{ただし、} \sum_j \lambda_j =1)
+\]
+に対して、観測データ$x_1,\ldots,x_N$からパラメータ$\bm{\lambda}
+(=\lambda_1,\ldots,\lambda_M)$を推定する問題を考える。この混合モデルはまず確率$\lambda_j$で$j$を選び、$p_j$に従って$x_i$を生成する。
+観測データからはどの$j$が選ばれたかわからないため、単純な最尤推定法は使えない。$x_i$を生成する際にどの$j$が選ばれたかを$q_i$で表すと、これが隠れ変数となる。 この場合、データ$x_1,\ldots,x_N$は不完全データであり、対応する完全データは$(x_1,q_1),\ldots,(x_N,q_N)$となる。
+\section{クラスタリングとEM法}
+そもそもEM法は様々な分野で用いられていたアルゴリズムの一般化として1977年に提案された。
+ここで、EM法の直感的な理解への助けとして、クラスタリングに用いられる$k$-平均法 ($k$-means)
+を発展させることによってEM法との関連を見ていくことにする。
+
+\subsection{クラスタリング}
+クラスタリングとはおおまかに言うと、インスタンスの集合$D=\{x_1,\ldots,x_N\}$を適当なsubsetに分割することである。各インスタンスは$d$次元ベクトルのようなものを想定する。
+クラスタリングの問題は、分割数があらかじめ指定されている場合とそうでない場合があるが、
+今回は指定されているものとする。さらに言うと、$D$を指定された数の直和集合に分割する問題を解くものとする。
+\subsection{$k$-means}
+$k$-meansは、与えられたインスタンス集合$D$を$k$個のクラスタ$C_1,\ldots,C_k$に直和分割するアルゴリズムであり、始めて公開されたのは1965年であると言われている。
+クラスタリングは各クラスタ$C_j$の重心$m_j$がわかれば簡単に求まるがそれは未知である。
+$k$-meansでは$m_j$に適当な初期値を代入することから始め、各インスタンスの属するクラスタと、各クラスタの重心を交互に更新することによって最適なクラスタリングを求める。
+具体的なアルゴリズムは以下のようになる:
+\begin{enumerate}
+  \item $\forall j$. $m_j$に適当な初期値を代入し、以下の2と3を終了条件を満たすまで繰り返す:
+  \item (Assignment Step) $\forall i$. $j^{(i)}= {\displaystyle\argmin_j}
+  \ d(x_i,m_j)$ (ただし$d(x,m)$は$d$と$m$との距離)
+  として、$x_i$をクラスタ$C_{j^{(i)}}$に加える。つまり、重心が最も近いクラスタに加える。このとき、クラスタへの割り当てが前回のループと全く変わらなかった場合、終了とする。
+  \item (Update Step) $\forall j$.
+  $m_j=\displaystyle\frac{\sum_{x_i \in C_j} x_i}{|C_j|}$
+\end{enumerate}
+(参考にした文献には明記されていないが)
+このアルゴリズムはいずれ終了し、ある種の意味で局所最適なクラスタリングを与える。局所最適であるので、初期値によって結果が異なる可能性がある。
+あとで見るように、これは (ちょっと特殊な) 確率モデルの元での局所最尤推定になっていることがわかる。
+
+\subsection{混合正規分布によるクラスタリング}
+前述のモデルでは各インスタンスは最も重心が近いクラスタに属するとした。これをより確率的な考え方にマッチするよう、モデルとその見方を変更する。
+
+\end{document}

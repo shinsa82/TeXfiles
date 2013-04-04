@@ -1,0 +1,14 @@
+#TeXlipse project settings
+#Wed Apr 03 15:57:20 JST 2013
+markTmpDer=true
+builderNum=0
+outputDir=
+makeIndSty=
+bibrefDir=
+outputFormat=dvi
+tempDir=tmp
+mainTexFile=em-algorithm.tex
+outputFile=em-algorithm.dvi
+langSpell=ja
+markDer=true
+srcDir=
