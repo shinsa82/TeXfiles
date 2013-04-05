@@ -164,7 +164,18 @@ Q(\bmtb,\bmt) &= \sum_{\bm x_i} \sum_\bmy p(\bmy | \bmx_i ;\bmt)
 	( \log p(\bmy;\bmtb) + \log p(\bmx_i|\bmy;\bmtb) )
 \end{split} 
 \]
-とすることが多い。これは確率モデルの表現方法によって異なってくる。
+とし、ここで
+\[
+p(\bmy | \bmx_i ;\bmt) = \frac{p(\bmx_i,\bmy ;\bmt)}{p(\bmx_i ;\bmt)}
+= \frac{p(\bmy;\bmt) p(\bmx_i|\bmy ;\bmt)}{p(\bmx_i ;\bmt)}
+\]
+であることから、
+\[
+Q(\bmtb,\bmt) = \sum_{\bm x_i} \sum_\bmy 
+\frac{p(\bmy;\bmt) p(\bmx_i|\bmy ;\bmt)}{p(\bmx_i ;\bmt)}
+	( \log p(\bmy;\bmtb) + \log p(\bmx_i|\bmy;\bmtb) )
+\]
+とすることも多い。どの形式の計算が容易かというのは確率モデルの表現方法によって異なってくる。
 
 \subsubsection{混合正規分布モデルとの関係}
 前述の$Q$関数の式を、混合正規分布モデルでのアルゴリズムと比べてみると、$p(\bmy | \bmx_i
